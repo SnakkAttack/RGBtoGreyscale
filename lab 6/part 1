@@ -1,0 +1,50 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Part1.s - Shared Memory Communication
+; Lab 5 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+	AREA Part1, CODE, READONLY
+	EXPORT main
+	EXPORT core1_task
+	EXPORT core2_task
+		
+	PRESERVE8
+
+
+core1_task
+        PUSH    {LR}  ; save return address on the stack
+
+        MOV     R2, #10  ; R2 := 10 (producer value)
+        STR     R2, [R1]   ; *(R1 + 0) = 10  sharedData[0] = 10
+
+        POP     {LR} ; restore return address
+        BX      LR  ; return
+
+core2_task
+        PUSH    {LR}  ; save return address
+
+        LDR     R2, [R1]    ; R2 := sharedData[0]
+        ADD     R3, R2, R2    ; R3 := R2 * 2 (add is faster than mul)
+        STR     R3, [R1, #4]     ; sharedData[1] = R3
+
+        POP     {LR}     ; restore return address
+        BX      LR    ; return
+
+main
+		PUSH	{LR}
+		LDR		R1, =sharedData
+		BL		core1_task   ; producer: sharedData[0] = 10
+        LDR     R1, =sharedData  ; reload base address
+        BL      core2_task    ; consumer: sharedData[1] = 20
+
+		POP		{LR}
+		BX		LR
+		
+		AREA	Part1_Data, DATA, READWRITE, ALIGN=2
+		EXPORT  sharedData
+			
+sharedData
+		DCD		0,0
+			
+		END
