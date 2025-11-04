@@ -1,0 +1,43 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Part2.s - Shared Memory Communication
+; Lab 5 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+        AREA    Part2, CODE, READONLY
+        EXPORT  main
+        EXPORT  update_cache
+        PRESERVE8
+
+
+update_cache
+        PUSH    {LR}
+        MOV     R3, #2
+        STR     R3, [R1]   ; cacheState = 2
+
+        MOV     R4, #5
+        STR     R4, [R2]  ; dataValue = 5
+        POP     {LR}
+        BX      LR
+
+main
+        PUSH    {LR}
+        LDR     R1, =cacheState
+        LDR     R2, =dataValue
+        BL      update_cache
+        POP     {LR}
+        BX      LR
+
+        AREA    Part2_Data, DATA, READWRITE, ALIGN=2
+        EXPORT  cacheState
+        EXPORT  dataValue
+			
+			
+cacheState
+        DCD     0 
+			
+			
+			
+dataValue
+        DCD     0
+        END
+
