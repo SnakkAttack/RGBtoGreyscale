@@ -1,0 +1,146 @@
+;Part2.s - MESI Cache Protocol Simulation
+; Lab 6 - Shared Memory + State Transitions
+;Target: ARM Cortex-M3 (Thumb-2)
+;Joel Duah, Gage Gunn, Trayia Wilson
+	
+	
+	AREA Part2, CODE, READONLY
+	EXPORT	main
+	EXPORT update_cache
+	PRESERVE8
+	THUMB
+;--------------------------------------------------------
+; void update_cache(unit32_t *cacheState, unit32_t *data)
+;---------------------------------------------------------
+;R1 = &cacheState
+;R2 = &data
+;---------------------------------------------------------
+;MESI State Encoding:
+;	0 = Invalid
+;	1 = Shared
+; 	2 = Exclusive
+;	3 = Modified
+;
+;Transitions
+;	0-> 2 : data = 15
+;	1-> 3 : data += 10
+;	2-> 3 : data *= 2
+;	3	  : no change
+;-------------------------------------------------------------
+
+update_cache
+	PUSH    {R4, LR}
+	
+	LDR 	R3, [R1]		; Load cacheState into R3
+	CMP		R3, #0
+	BEQ		Invalid_to_Exclusove
+	CMP		R3, #1
+	BEQ		Shared_to_Modified
+	CMP		R3, #2
+	BEQ		Exclusive_to_Modified
+	B 		Done 			; if 3 (Modified), skip
+	
+;-----------------------------------------------------
+Invalid (0) -> Exclusive (2)
+;-------------------------------
+Invalid_to_Exclusive
+
+	MOVS	R3, #2
+	STR		R3, [R1]			; cacheState = 2
+	DMB							; set memory ordering
+	MOVS	R4, #15
+	STR		R4, [R2]			; data = 15
+	B		Done
+;-------------------------------------------------------
+Shared (1) -> Modified (3)
+;-------------------------------------------------------
+Shared_to_Modified
+	MOVS	R3, #3
+	STR		R3, [R1]			; cacheState = 3
+	DMB
+	LDR		R4, [R2]
+	LSLS	R4, R4, #1			; data *= 2
+	STR		R4, [R2]
+	B		Done
+;----------------------------------------------
+Exclusive (2) -> Modified (3)
+;----------------------------------------------
+Exclusive_to_Modified
+	MOVS	R3, #3
+	STR		R3, [R1]			; cacheState = 3
+	DMB
+	LDR 	R4, [R2]
+	LSLS	R4, R4, #1			; data *= 2
+	STR		R4, [R2]
+	B		Done
+	
+Done
+
+	POP		{R4, LR}
+	BX		LR
+	
+;------------------------------------------------------------
+main - Test Harness
+;-------------------------------------------------------------
+main
+	PUSH	{LR}
+	
+	;------------------------------
+	; Test 1: cacheState=0,data=0
+	;------------------------------
+	LDR		R1, =cacheState
+	LDR		R2, =dataValue
+	LDR		R0, =0
+	STR		R0, [R1]
+	STR		R0, [R2]
+	BL		update_cache		; expect (2, 15)
+	
+	;-------------------------------
+	; Test 2: cacheState=1, data=5
+	;-------------------------------
+	LDR		R1, =cacheState
+	LDR 	R2, =dataValue
+	MOVS	R0, #1
+	STR		R0, [R1]
+	MOVS	R0, #5
+	STR		R0, [R2]
+	BL		update_cache		; expect (3, 15)
+	
+	;--------------------------------
+	; Test 3:  cacheState=2, data=10
+	;--------------------------------
+	LDR		R1, =cacheState
+	LDR		R2, =dataValue
+	MOVS	R0, #2
+	STR		R0, [R1]
+	MOVS	R0, #10
+	STR		R0, [R2]
+	BL		update_cache		; expect (3, 20)
+	
+	;----------------------------------
+	; Test 4: cacheState=3, data=25
+	;----------------------------------
+	LDR		R1, =cacheState
+	LDR		R2, =dataValue
+	MOVS	R0, #3
+	STR		R0, [R1]
+	MOVS	R0, #25
+	STR		R0, [R2]
+	BL		update_cache		; expect (3, 25)
+	
+	POP		{LR}
+	BX		LR
+	
+	
+	
+	
+	AREA	Part2_Data, DATA, READWRITE,  ALIGN=2
+	EXPORT	cacheState
+	EXPORT	dataValue
+		
+cacheState
+	DCD		0
+	
+dataValuem
+	DCD		0
+	END
