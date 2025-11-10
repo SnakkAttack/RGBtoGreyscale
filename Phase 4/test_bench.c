@@ -1,18 +1,18 @@
 /*
 ================================================================================
  File:        test_bench.c
- Project:     Phase 4 — Optimization & Testing (CS 2400)
+ Project:     Phase 4 â€” Optimization & Testing (CS 2400)
  Team:        Gage, Joel, Trayia
  Target:      Cortex-M (Keil ARMCLANG/ARMCC)
 
  Purpose:
-   Automated micro-benchmark + correctness harness for the RGB888 ? Grayscale8
+   Automated micro-benchmark + correctness harness for the RGB888   Grayscale8
    assembly routine `rgb_to_gray_scalar_asm`. For each image size it:
-     • Generates a deterministic RGB test pattern
-     • Computes a reference grayscale in C (oracle)
-     • Runs the assembly kernel for TRIALS iterations
-     • Verifies byte-exact correctness after each trial
-     • Records averaged performance in cycles-per-pixel (CPP)
+     â€¢ Generates a deterministic RGB test pattern
+     â€¢ Computes a reference grayscale in C (oracle)
+     â€¢ Runs the assembly kernel for TRIALS iterations
+     â€¢ Verifies byte-exact correctness after each trial
+     â€¢ Records averaged performance in cycles-per-pixel (CPP)
 
  How to use (Keil uVision):
    1) Build and load as usual.
@@ -26,11 +26,11 @@
       (Optionally: g_last_ticks, g_last_pixels, g_last_cpp_x256)
 
  Test matrix (NSIZES = 4):
-   [0] 32×32   [1] 64×64   [2] 128×64   [3] 128×128
+   [0] 32Ã—32   [1] 64Ã—64   [2] 128Ã—64   [3] 128Ã—128
  Trials per size: TRIALS = 10
 
  Timing:
-   • Prefers DWT_CYCCNT on Cortex-M3/M4/M7 (cycle-accurate).
+   â€¢ Prefers DWT_CYCCNT on Cortex-M3/M4/M7 (cycle-accurate).
 ================================================================================
 */
 
@@ -158,7 +158,7 @@ static int check_equal(int w, int h){
 }
 
 /* ---------------------------------------------------------------------------
-   MAIN — runs TRIALS iterations per size, publishes averages, and pauses
+   MAIN â€” runs TRIALS iterations per size, publishes averages, and pauses
    once per size (via SIZE_DONE_BREAK) so results are easy to read in Watch.
 --------------------------------------------------------------------------- */
 int main(void){
@@ -193,7 +193,7 @@ int main(void){
             if (!ok) failures++;
 
             uint32_t pixels = (uint32_t)W * (uint32_t)H;
-            uint32_t cpp_x256 = (ticks << 8) / (pixels ? pixels : 1);
+            uint32_t cpp_x256 = (ticks << 8) / (pixels   pixels : 1);
 
             sum_ticks    += ticks;
             sum_cpp_x256 += cpp_x256;
@@ -221,3 +221,4 @@ int main(void){
     /* Park the core to keep results visible in the debugger */
     while (1){ __asm volatile ("nop"); }
 }
+
