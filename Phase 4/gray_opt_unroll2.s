@@ -3,7 +3,7 @@
 ; Project:       Phase 4 — Optimization & Testing (CS 2400)
 ; Team:          Gage, Joel, Trayia
 ; Target:        Cortex-M (Thumb-2) — Keil ARMASM/ARMCLANG syntax
-; Description:   Optimized RGB888 ? Grayscale8 conversion.
+; Description:   Optimized RGB888 Grayscale8 conversion.
 ;                Uses a 2-pixel unrolled inner loop and hoisted coefficients to
 ;                reduce control-flow and setup overhead vs. Phase 3 baseline.
 ;
@@ -152,3 +152,4 @@ rows_done
         ENDP
 
         END
+
