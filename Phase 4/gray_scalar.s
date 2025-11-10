@@ -1,5 +1,5 @@
         ;------------------------------------------------------------
-        ; gray_scalar.s  ? RGB -> Gray8 (scalar) for Cortex-M (Thumb-2)
+        ; gray_scalar.s  RGB -> Gray8 (scalar) for Cortex-M (Thumb-2)
         ; Keil ARMASM/ARMCLANG armasm syntax
         ;
         ; Signature (AAPCS-32):
@@ -47,7 +47,7 @@ rgb_to_gray_scalar_asm PROC
         PUSH    {r4-r11, lr}
 
         ; Re-establish locals (we just saved r4-r11 on stack, but we still have
-        ; width/height in the registers we pushed; we?ll reload from the copies we made)
+        ; width/height in the registers we pushed; we ll reload from the copies we made)
         ; Store persistent src_stride into r12 so r3 is free in inner loop.
         MOV     r12, r3               ; r12 = src_stride
 
@@ -57,7 +57,7 @@ rgb_to_gray_scalar_asm PROC
         MOVS    r8, #0                ; y = 0
 
 row_loop
-        CMP     r8, r5                ; y < height ?
+        CMP     r8, r5                ; y < height  
         BGE     rows_done
 
         ; Column init
@@ -66,7 +66,7 @@ row_loop
         MOV     r11, r7               ; src_row_ptr = cur_src
 
 col_loop
-        CMP     r9, r4                ; x < width ?
+        CMP     r9, r4                ; x < width  
         BGE     row_done
 
         ; Load RGB bytes (interleaved)
@@ -105,3 +105,4 @@ rows_done
 
         ENDP
         END
+
