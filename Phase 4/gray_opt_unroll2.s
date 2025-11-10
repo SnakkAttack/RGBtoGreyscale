@@ -1,8 +1,8 @@
 ;===============================================================================
 ; File:          gray_opt_unroll2.s
-; Project:       Phase 4 — Optimization & Testing (CS 2400)
+; Project:       Phase 4 â€” Optimization & Testing (CS 2400)
 ; Team:          Gage, Joel, Trayia
-; Target:        Cortex-M (Thumb-2) — Keil ARMASM/ARMCLANG syntax
+; Target:        Cortex-M (Thumb-2) â€” Keil ARMASM/ARMCLANG syntax
 ; Description:   Optimized RGB888 ? Grayscale8 conversion.
 ;                Uses a 2-pixel unrolled inner loop and hoisted coefficients to
 ;                reduce control-flow and setup overhead vs. Phase 3 baseline.
@@ -15,7 +15,7 @@
 ; Parameters:
 ;   r0  = dst pointer (uint8_t*, grayscale output)
 ;   r1  = dst_stride (bytes per output row; equals width for tightly packed)
-;   r2  = src pointer (uint8_t*, interleaved RGBRGB… input)
+;   r2  = src pointer (uint8_t*, interleaved RGBRGBâ€¦ input)
 ;   r3  = src_stride (bytes per input row; equals width*3 if tightly packed)
 ;   [sp,#0] = width  (pixels)
 ;   [sp,#4] = height (rows)
@@ -35,14 +35,14 @@
 ;   r12 = src_stride (sticky copy) [frees r3 in loop body]
 ;
 ; Key Optimizations (Phase 4):
-;   • 2-pixel unrolling: halves branch frequency in the hot loop.
-;   • Hoisted coeffs: remove repeated MOVS for 77/150/29 per pixel.
-;   • Countdown loop: SUBS+branch pattern avoids extra CMPs per pixel.
-;   • Correct row advance: rewind to row start, then add stride (prevents drift).
+;   â€¢ 2-pixel unrolling: halves branch frequency in the hot loop.
+;   â€¢ Hoisted coeffs: remove repeated MOVS for 77/150/29 per pixel.
+;   â€¢ Countdown loop: SUBS+branch pattern avoids extra CMPs per pixel.
+;   â€¢ Correct row advance: rewind to row start, then add stride (prevents drift).
 ;
 ; Test Notes:
-;   • Verified byte-exact against C reference (rgb_to_gray_ref).
-;   • Benchmarked with DWT_CYCCNT; averaged 10 trials per size.
+;   â€¢ Verified byte-exact against C reference (rgb_to_gray_ref).
+;   â€¢ Benchmarked with DWT_CYCCNT; averaged 10 trials per size.
 ;
 ;===============================================================================
 
